@@ -14,7 +14,7 @@ export const getMe = async (req: AuthRequest, res: Response , next: NextFunction
         return res.status(200).json( user )
     } catch (error) {
         res.status(500)
-        next()
+        next(error)
     }
 }
 
@@ -41,6 +41,6 @@ export const authCallback = async (req: Request, res: Response , next: NextFunct
         res.json(user)
     } catch (error) {
         res.status(500)
-        next()
+        next(error)
     }
 }
