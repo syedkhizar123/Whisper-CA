@@ -5,9 +5,7 @@ import { Message } from "../models/Message";
 import { Chat } from "../models/Chat";
 import { User } from "../models/User";
 
-interface SocketWithUserId extends Socket {
-    userId: string
-}
+
 
 // Store online users in memory 
 // "Map<string,string>" ---> Typescript-only: It tells that the key and value will be type of string 
@@ -18,8 +16,8 @@ export const initializeSocket = (httpServer: HttpServer) => {
     const allowedOrigins = [
         "http://localhost:8081",
         "http://localhost:5173",
-        process.env.FRONTEND_URL as string
-    ]
+        process.env.FRONTEND_URL
+    ].filter(Boolean) as string[]
 
     const io = new SocketServer(httpServer, { cors: { origin: allowedOrigins } })
 
@@ -39,7 +37,7 @@ export const initializeSocket = (httpServer: HttpServer) => {
             const user = await User.findOne({ clerkId })
             if (!user) return next(new Error("User not found"));
 
-            (socket as SocketWithUserId).userId = user._id.toString()
+            socket.data.userId = user._id.toString()
 
             next()
         } catch (error: any) {
@@ -51,7 +49,7 @@ export const initializeSocket = (httpServer: HttpServer) => {
     // This event is triggered when a new user connects to the server.
     // The word "connection" is special , it can not be changed  
     io.on("connection", (socket) => {
-        const userId = (socket as SocketWithUserId).userId
+        const userId = socket.data.userId
 
         // send list of online users to the new connected user
         socket.emit("online-users", {
@@ -99,7 +97,7 @@ export const initializeSocket = (httpServer: HttpServer) => {
                  chat.lastMessageAt = new Date()
                  await chat.save()
 
-                 await message.populate("sender" , "name email avatar")
+                 await message.populate("sender" , "name avatar")
 
                 //   Update inside chat
                  io.to(`chat:${chatId}`).emit("new-message" , message)
