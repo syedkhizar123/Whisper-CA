@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, Image , Dimensions, Pressable } from 'react-native'
+import { View, Text, Image, Dimensions, Pressable, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useSocialAuth } from '@/hooks/useSocialAuth';
 
 const AuthScreen = () => {
 
   const { width, height } = Dimensions.get("window");
+  const { handleSocialAuth, loading } = useSocialAuth()
   return (
     <View className='flex-1 bg-surface-dark'>
       <View className='absolute inset-0 overflow-hidden'></View>
@@ -29,7 +31,7 @@ const AuthScreen = () => {
             source={require('../../assets/images/auth.png')}
             style={{
               width: width - 48,
-              height: height*0.3
+              height: height * 0.3
             }}
             resizeMode='contain'
           />
@@ -47,22 +49,38 @@ const AuthScreen = () => {
           {/* Auth Buttons */}
           <View className='flex-row gap-4 mt-10'>
             <Pressable className='flex-1 flex-row items-center justify-center gap-2 bg-white/10 py-4 rounded-2xl border border-white/20~ active:scale-[0.97]'
-              disabled={false}
-              onPress={() => console.log("Google Pressed")}
+              disabled={loading === "oauth_google"}
+              onPress={() => handleSocialAuth("oauth_google")}
             >
-              <Image
-                source={require('../../assets/images/google.png')}
-                style={{ height: 20 , width: 20}}
-                resizeMode='contain'
-              />
-              <Text className='text-foreground font-semibold text-sm'>Google</Text>
+              {
+                loading === "oauth_google" ? (
+                  <ActivityIndicator size="small" color="#FFFF" />
+                ) : (
+                  <>
+                    <Image
+                      source={require('../../assets/images/google.png')}
+                      style={{ height: 20, width: 20 }}
+                      resizeMode='contain'
+                    />
+                    <Text className='text-foreground font-semibold text-sm'>Google</Text>
+                  </>
+                )
+              }
             </Pressable>
-             <Pressable className='flex-1 flex-row items-center justify-center gap-2 bg-white/10 py-4 rounded-2xl border border-white/20 active:scale-[0.97]'
-              disabled={false}
-              onPress={() => console.log("Apple Pressed")}
+            <Pressable className='flex-1 flex-row items-center justify-center gap-2 bg-white/10 py-4 rounded-2xl border border-white/20 active:scale-[0.97]'
+              disabled={loading === "oauth_apple"}
+              onPress={() => handleSocialAuth("oauth_apple")}
             >
-             <Ionicons name='logo-apple' size={20} color="#FFFFFF" />
-              <Text className='text-foreground font-semibold text-sm'>Apple</Text>
+              {
+                loading === "oauth_apple" ? (
+                  <ActivityIndicator size='small' color='#FFFFFF' />
+                ) : (
+                  <>
+                    <Ionicons name='logo-apple' size={20} color="#FFFFFF" />
+                    <Text className='text-foreground font-semibold text-sm'>Apple</Text>
+                  </>
+                )
+              }
             </Pressable>
           </View>
         </View>

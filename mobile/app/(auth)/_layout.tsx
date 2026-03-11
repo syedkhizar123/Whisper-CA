@@ -1,10 +1,17 @@
+import {  useAuth } from '@clerk/clerk-expo'
 import { Redirect, Stack } from 'expo-router'
-import { View, Text } from 'react-native'
 
 const AuthLayout = () => {
+   const { isSignedIn, isLoaded } = useAuth()
 
-    const isAuth = false
-    if(isAuth) return <Redirect href={"/(tabs)"} />
+  if (!isLoaded) {
+    return null
+  }
+
+  if(isSignedIn){
+    return <Redirect href="/(tabs)" />
+  } 
+
   return (
     <Stack screenOptions={{ headerShown: false }} />
   )
