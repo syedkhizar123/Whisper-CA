@@ -12,13 +12,20 @@ export const useSocialAuth = () => {
         setLoading(strategy)
         try {
             const { createdSessionId, setActive } = await startSSOFlow({ strategy })
-            if (createdSessionId && setActive) {
-                await setActive({ session: createdSessionId })
+
+            if (!createdSessionId || !setActive) {
+                const provider = strategy === "oauth_google" ? "Google" : "Apple"
+                Alert.alert(
+                    "Sign-in incomplete",
+                    `${provider} sign-in did not complete. Please try again`
+                )
+                return 
             }
+            await setActive({ session: createdSessionId })
         } catch (error) {
-            console.log("Error in social Auth:- " , error)
+            console.log("Error in social Auth:- ", error)
             const provider = strategy === "oauth_google" ? "Google" : "Apple"
-            Alert.alert("Error" , `Failed to sign in with ${provider}. Please try again`)
+            Alert.alert("Error", `Failed to sign in with ${provider}. Please try again`)
         } finally {
             setLoading(null)
         }

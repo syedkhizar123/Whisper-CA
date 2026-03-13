@@ -13,6 +13,11 @@ app.use(express.json())
 // Middleware that integrates clerk authentication into express application
 app.use(clerkMiddleware())
 
+app.use((req, res, next) => {
+    console.log(`📨 ${req.method} ${req.url}`)
+    next()
+})
+
 app.get("/health" , (req , res) => {
     res.json({ status: "ok" , message: "Server is running"})
 })

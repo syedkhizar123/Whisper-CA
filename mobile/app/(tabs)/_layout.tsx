@@ -3,13 +3,13 @@ import { Ionicons } from '@expo/vector-icons'
 import { useAuth } from '@clerk/clerk-expo'
 
 const TabsLayout = () => {
-     const { isSignedIn, isLoaded } = useAuth()
+    const { isSignedIn, isLoaded } = useAuth()
 
-  if (!isLoaded) return null
+    if (!isLoaded) return null
 
-  if (!isSignedIn) {
-    return <Redirect href="/(auth)" />
-  }
+    if (!isSignedIn) {
+        return <Redirect href="/(auth)" />
+    }
     return (
         <Tabs
             screenOptions={{
@@ -23,7 +23,7 @@ const TabsLayout = () => {
                 },
                 tabBarActiveTintColor: "#F4A261",
                 tabBarInactiveTintColor: "#6B6B70",
-                tabBarLabelStyle: { 
+                tabBarLabelStyle: {
                     fontSize: 12,
                     fontWeight: "600"
                 }
@@ -33,7 +33,7 @@ const TabsLayout = () => {
                 name='index'
                 options={{
                     title: "Chats",
-                    tabBarIcon: ({ color , focused , size}) => (
+                    tabBarIcon: ({ color, focused, size }) => (
                         <Ionicons
                             name={focused ? "chatbubbles" : "chatbubbles-outline"}
                             size={size}
@@ -44,9 +44,9 @@ const TabsLayout = () => {
             />
             <Tabs.Screen
                 name='profile'
-                 options={{
+                options={{
                     title: "Profile",
-                    tabBarIcon: ({ color , focused , size}) => (
+                    tabBarIcon: ({ color, focused, size }) => (
                         <Ionicons
                             name={focused ? "person" : "person-outline"}
                             size={size}

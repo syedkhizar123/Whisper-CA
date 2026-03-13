@@ -3,10 +3,13 @@ import { View, Text, Image, Dimensions, Pressable, ActivityIndicator } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useSocialAuth } from '@/hooks/useSocialAuth';
 
+
 const AuthScreen = () => {
 
   const { width, height } = Dimensions.get("window");
   const { handleSocialAuth, loading } = useSocialAuth()
+  const isLoading = loading !== null
+ 
   return (
     <View className='flex-1 bg-surface-dark'>
       <View className='absolute inset-0 overflow-hidden'></View>
@@ -49,8 +52,10 @@ const AuthScreen = () => {
           {/* Auth Buttons */}
           <View className='flex-row gap-4 mt-10'>
             <Pressable className='flex-1 flex-row items-center justify-center gap-2 bg-white/10 py-4 rounded-2xl border border-white/20~ active:scale-[0.97]'
-              disabled={loading === "oauth_google"}
-              onPress={() => handleSocialAuth("oauth_google")}
+              disabled={isLoading}
+              accessibilityRole='button'
+              accessibilityLabel='Continue With Google'
+              onPress={() => !isLoading && handleSocialAuth("oauth_google")}
             >
               {
                 loading === "oauth_google" ? (
@@ -68,8 +73,10 @@ const AuthScreen = () => {
               }
             </Pressable>
             <Pressable className='flex-1 flex-row items-center justify-center gap-2 bg-white/10 py-4 rounded-2xl border border-white/20 active:scale-[0.97]'
-              disabled={loading === "oauth_apple"}
-              onPress={() => handleSocialAuth("oauth_apple")}
+              disabled={isLoading}
+              accessibilityRole='button'
+              accessibilityLabel='Continue With Apple'
+              onPress={() => !isLoading && handleSocialAuth("oauth_apple")}
             >
               {
                 loading === "oauth_apple" ? (
