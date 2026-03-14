@@ -2,6 +2,7 @@ import { useAuthCallback } from "./useAuth";
 import { useEffect, useRef } from "react";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import * as Sentry from '@sentry/react-native';
+import type { User } from "@/types";
 
 
 export const useUsersync  = () => {
@@ -14,7 +15,7 @@ export const useUsersync  = () => {
     if (isSignedIn && user && !hasSynced.current) {
       hasSynced.current = true;
       syncUser(undefined, {
-        onSuccess: (data) => {
+        onSuccess: (data: User) => {
           console.log("✅ User synced with backend:", data.name);
          Sentry.logger.info(Sentry.logger.fmt`User synced with backend: ${data.name}` , {
           userId: user.id,
