@@ -6,16 +6,25 @@ import { useChats } from '@/hooks/useChats';
 import { Ionicons } from '@expo/vector-icons';
 import EmptyChats from '../components/EmptyChats';
 import ChatItem from '../components/ChatItem';
+import { Chat } from '@/types';
 
 const Chats = () => {
 
   const router = useRouter()
-  const { data: chats, isLoading, error } = useChats()
+  const { data: chats, isLoading, error , refetch} = useChats()
 
   useUsersync()
 
-  const handleChatPress = (item) => {
-    console.log("Hello")
+  const handleChatPress = (chat: Chat) => {
+    router.push({
+      pathname: "/chat/[id]" as any,
+      params: {
+        id: chat._id,
+        participantId : chat.participant._id,
+        name: chat.participant.name,
+        avatar: chat.participant.avatar
+      }
+    })
   }
 
   if (isLoading) {
@@ -29,7 +38,10 @@ const Chats = () => {
   if (error) {
     return (
       <View className='flex-1 items-center justify-center bg-surface'>
-        <Text className='text-red-500'>Failed to load Chats</Text>
+        <Text className='text-gray-300 text-2xl font-bold'>Failed to load Chats</Text>
+        <Pressable onPress={() => refetch()} className='mt-4 px-4 py-2 bg-primary rounded-lg'>
+          <Text className='text-foreground text-xl font-semibold'>Retry</Text>
+        </Pressable>
       </View>
     )
   }
