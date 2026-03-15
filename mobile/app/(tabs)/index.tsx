@@ -4,8 +4,8 @@ import * as Sentry from '@sentry/react-native';
 import { useRouter } from 'expo-router';
 import { useChats } from '@/hooks/useChats';
 import { Ionicons } from '@expo/vector-icons';
-import EmptyChats from '../components/EmptyChats';
-import ChatItem from '../components/ChatItem';
+import EmptyChats from '../../components/EmptyChats';
+import ChatItem from '../../components/ChatItem';
 import { Chat } from '@/types';
 
 const Chats = () => {
@@ -62,7 +62,7 @@ const Chats = () => {
           iconColor='#6B6B70'
           iconSize={64}
           buttonLabel='New Chat'
-          onPressButton={() => console.log("Pressed")}
+          onPressButton={() => router.push('/new-chat')}
           />}
       />
     </View>

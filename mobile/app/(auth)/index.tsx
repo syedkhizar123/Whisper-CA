@@ -3,7 +3,7 @@ import { View, Text, Image, Dimensions, Pressable, ActivityIndicator } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useSocialAuth } from '@/hooks/useSocialAuth';
 import { LinearGradient } from "expo-linear-gradient"
-import { AnimatedOrb } from '../components/AnimatedOrb';
+import { AnimatedOrb } from '../../components/AnimatedOrb';
 import { BlurView } from "expo-blur"
 
 
