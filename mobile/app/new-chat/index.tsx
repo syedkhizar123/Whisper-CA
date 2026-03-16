@@ -2,13 +2,15 @@ import { View, Text, Pressable, TextInput, ActivityIndicator, ScrollView } from 
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { useUsers } from '@/hooks/useUsers'
 import { useGetOrCreateChat } from '@/hooks/useChats'
 import { User } from '@/types'
+import { UserItem } from '@/components/UserItem'
 
 const NewChatScreen = () => {
 
+  const router = useRouter()
   const [search, setSearch] = useState('')
   const { data: allUsers, isLoading } = useUsers()
   const { mutate: getOrCreateChat, isPending: isCreatingChat } = useGetOrCreateChat()
@@ -21,8 +23,19 @@ const NewChatScreen = () => {
 
   const handleUserSelect = (user: User) => {
     getOrCreateChat(user._id, {
-      onSuccess: (chat) => {
-        // router.push(`/chat/[id]`)
+      onSuccess: (chat: any) => {
+        router.dismiss() 
+       setTimeout(() => {
+         router.push({
+          pathname: "/chat/[id]" as any,
+          params: {
+            id: chat._id,
+            participantId: chat.participant._id,
+            name: chat.participant.name,
+            avatar: chat.participant.avatar
+          }
+        })
+       } , 100)
       }
     })
   }
@@ -85,7 +98,12 @@ const NewChatScreen = () => {
                 >
                   <Text className="text-muted-foreground text-xs mb-3">USERS</Text>
                   {users.map((user) => (
-                   <Text key={user._id}> {user.name} </Text>
+                    <UserItem
+                      key={user._id}
+                      user={user}
+                      isOnline={true}
+                      onPress={() => handleUserSelect(user)}
+                    />
                   ))}
                 </ScrollView>
               )

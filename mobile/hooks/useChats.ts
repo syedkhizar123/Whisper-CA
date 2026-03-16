@@ -27,6 +27,7 @@ export const useGetOrCreateChat = () => {
                 method: "POST",
                 url: `/chats/with/${participantId}`
             })
+            return data
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["chats"]  })
