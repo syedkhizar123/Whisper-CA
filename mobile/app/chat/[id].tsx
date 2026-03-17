@@ -159,7 +159,7 @@ const ChatDetails = () => {
               {
                 messages.map((message) => {
                   if (!message.sender) {
-                    console.log("❌ NULL SENDER MESSAGE:", message)
+                    console.log("NULL SENDER MESSAGE:", message)
                     return null
                   }
                   const senderId = (message.sender as MessageSender)._id

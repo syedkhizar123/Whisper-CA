@@ -47,7 +47,9 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         })
 
         socket.on("disconnect", () => {
-            console.log("Socket disconnected", { socketID: socket.id })
+            console.log("Socket disconnected"
+                
+            )
             set({ isConnected: false })
         })
 
