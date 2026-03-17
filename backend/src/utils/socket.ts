@@ -111,6 +111,30 @@ export const initializeSocket = (httpServer: HttpServer) => {
             }
         })
 
+        socket.on("typing" , async(data: { chatId : string , isTyping: boolean}) => {
+
+            const typingPayload = {
+                userId,
+                chatId: data.chatId,
+                isTyping: data.isTyping
+            }
+
+            socket.to(`chat:${data.chatId}`).emit("typing" , typingPayload)
+
+            try {
+                
+                const chat = await Chat.findById(data.chatId)
+                if(chat) {
+                    const otherParticipantId = chat.participants.find((p) => p._id.toString() !== userId)
+                    if(otherParticipantId){
+                        socket.to(`user:${otherParticipantId}`).emit("typing" , typingPayload)
+                    }
+                }
+            } catch (error) {
+                // Silent fail
+            }
+        })
+
         socket.on("disconnect" , () => {
             onlineUsers.delete(userId)
 
