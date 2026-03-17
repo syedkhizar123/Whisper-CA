@@ -88,7 +88,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
                 return [...filtered, msg]
             })
 
-            queryClient.setQueryData<Chat[]>([" chats"], (oldChats) => {
+            queryClient.setQueryData<Chat[]>(["chats"], (oldChats) => {
                 return oldChats?.map((chat) => {
                     if (chat._id === msg.chat) {
                         return {
@@ -123,13 +123,13 @@ export const useSocketStore = create<SocketState>((set, get) => ({
             })
         })
 
-        socket.on("typing" , ({ userId , chatId , isTyping} : {userId: string , chatId: string , isTyping: boolean}) => {
+        socket.on("typing", ({ userId, chatId, isTyping }: { userId: string, chatId: string, isTyping: boolean }) => {
 
             set((state) => {
                 const typingUsers = new Map(state.typingUsers)
-                if (isTyping) typingUsers.set(chatId , userId)
+                if (isTyping) typingUsers.set(chatId, userId)
                 else typingUsers.delete(chatId)
-                return { typingUsers: typingUsers}
+                return { typingUsers: typingUsers }
             })
         })
 
@@ -206,5 +206,10 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         }
         socket.once("socket-error", errorHandler)
     },
-    sendTyping: () => { }
+    sendTyping: (chatId, isTyping) => {
+        const { socket } = get();
+        if (socket?.connected) {
+            socket.emit("typing", { chatId, isTyping });
+        }
+    },
 }))

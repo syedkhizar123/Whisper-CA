@@ -9,6 +9,7 @@ const queryClient = new QueryClient()
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 import * as Sentry from '@sentry/react-native';
+import SocketConnection from "@/components/SocketConnection";
 
 Sentry.init({
   dsn: 'https://3f536ab04fb48149fa5b22096fda009e@o4511030775578624.ingest.us.sentry.io/4511030798188544',
@@ -43,6 +44,7 @@ export default Sentry.wrap(function RootLayout() {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <QueryClientProvider client={queryClient}>
+        <SocketConnection />
         <StatusBar style="light" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#0D0D0F" } }} >
           <Stack.Screen name="(auth)" options={{ animation: "fade" }} />

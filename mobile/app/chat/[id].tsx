@@ -1,6 +1,5 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator, TextInput } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { ScrollView } from 'react-native-reanimated/lib/typescript/Animated'
 import { useCurrentUser } from '@/hooks/useAuth'
 import { useMessages } from '@/hooks/useMessages'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -8,6 +7,9 @@ import { useSocketStore } from '@/lib/socket'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
+import EmptyChats from '@/components/EmptyChats'
+import { MessageSender } from '@/types'
+import MessageBubble from '@/components/MessageBubble'
 
 type ChatParams = {
   id: string,
@@ -73,35 +75,35 @@ const ChatDetails = () => {
       }
       sendTyping(chatId, false)
     }
-  } , [chatId , isConnected , sendTyping])
+  }, [chatId, isConnected, sendTyping])
 
-  const handelSend = () => {
-    if(!messageText.trim() || isSending || !isConnected || !currentUser) return 
+  const handleSend = () => {
+    if (!messageText.trim() || isSending || !isConnected || !currentUser) return
 
-     if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current)
-      }
-      sendTyping(chatId, false)
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current)
+    }
+    sendTyping(chatId, false)
 
-      setIsSending(true)
-      sendMessage(chatId , messageText.trim() , {
-        _id: currentUser._id,
-        name: currentUser.name,
-        email: currentUser.email,
-        avatar: currentUser.avatar
-      })
-      setMessageText("")
-      setIsSending(false)
+    setIsSending(true)
+    sendMessage(chatId, messageText.trim(), {
+      _id: currentUser._id,
+      name: currentUser.name,
+      email: currentUser.email,
+      avatar: currentUser.avatar
+    })
+    setMessageText("")
+    setIsSending(false)
 
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true})
-      } , 100)
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true })
+    }, 100)
   }
 
   return (
-    <SafeAreaView className='flex-1 bg-surface' edges={["top" , "bottom"]}>
+    <SafeAreaView className='flex-1 bg-surface' edges={["top", "bottom"]}>
 
-       {/* Header */}
+      {/* Header */}
       <View className="flex-row items-center px-4 py-2 bg-surface border-b border-surface-light">
         <Pressable onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#F4A261" />
@@ -126,6 +128,83 @@ const ChatDetails = () => {
           </Pressable>
         </View>
       </View>
+
+
+      {/* Messages and Keyboard Input */}
+      <KeyboardAvoidingView className='flex-1'
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
+      >
+        <View className='flex-1 bg-surface'>
+          {isLoading ? (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator size="large" color="#F4A261" />
+            </View>
+          ) : !messages || messages.length === 0 ? (
+            <EmptyChats
+              title="No messages yet"
+              subtitle="Start the conversation!"
+              iconName="chatbubbles-outline"
+              iconColor="#6B6B70"
+              iconSize={64}
+            />
+          ) : (
+            <ScrollView
+              ref={scrollViewRef}
+              contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12, gap: 8 }}
+              onContentSizeChange={() => {
+                scrollViewRef.current?.scrollToEnd({ animated: false })
+              }}
+            >
+              {
+                messages.map((message) => {
+                  if (!message.sender) {
+                    console.log("❌ NULL SENDER MESSAGE:", message)
+                    return null
+                  }
+                  const senderId = (message.sender as MessageSender)._id
+                  const isFromMe = currentUser ? senderId === currentUser._id : false
+                  return <MessageBubble key={message._id} message={message} isFromMe={isFromMe} />
+
+                })
+              }
+            </ScrollView>
+          )}
+
+          {/* Input Bar */}
+          <View className='px-3 pb-3 pt-2 bg-surface border-t border-surface-light'>
+            <View className='flex-row items-end bg-surface-card rounded-3xl px-3 py-1.5 gap-2'>
+              <Pressable className="w-8 h-8 rounded-full items-center justify-center">
+                <Ionicons name="add" size={22} color="#F4A261" />
+              </Pressable>
+
+              <TextInput
+                placeholder="Type a message"
+                placeholderTextColor="#6B6B70"
+                className="flex-1 text-foreground text-sm mb-2"
+                multiline
+                style={{ maxHeight: 100 }}
+                value={messageText}
+                onChangeText={handleTyping}
+                onSubmitEditing={handleSend}
+                editable={!isSending}
+              />
+
+              <Pressable
+                className="w-8 h-8 rounded-full items-center justify-center bg-primary"
+                onPress={handleSend}
+                disabled={!messageText.trim() || isSending}
+              >
+                {isSending ? (
+                  <ActivityIndicator size="small" color="#0D0D0F" />
+                ) : (
+                  <Ionicons name="send" size={18} color="#0D0D0F" />
+                )}
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }
