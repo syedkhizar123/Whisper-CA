@@ -67,7 +67,7 @@ const ChatDetails = () => {
       // Stop typing indicator after 2 seconds of no input
       typingTimeoutRef.current = setTimeout(() => {
         sendTyping(chatId, false)
-      }, 2000)
+      }, 1000)
     }
     else {
       if (typingTimeoutRef.current) {
@@ -172,37 +172,38 @@ const ChatDetails = () => {
           )}
 
           {/* Input Bar */}
-          <View className='px-3 pb-3 pt-2 bg-surface border-t border-surface-light'>
-            <View className='flex-row items-end bg-surface-card rounded-3xl px-3 py-1.5 gap-2'>
-              <Pressable className="w-8 h-8 rounded-full items-center justify-center">
-                <Ionicons name="add" size={22} color="#F4A261" />
-              </Pressable>
+         
+            <View className='px-3 pb-3 pt-2 bg-surface border-t border-surface-light'>
+              <View className='flex-row items-end bg-surface-card rounded-3xl px-3 py-1.5 gap-2'>
+                <Pressable className="w-8 h-8 rounded-full items-center justify-center">
+                  <Ionicons name="add" size={22} color="#F4A261" />
+                </Pressable>
 
-              <TextInput
-                placeholder="Type a message"
-                placeholderTextColor="#6B6B70"
-                className="flex-1 text-foreground text-sm mb-2"
-                multiline
-                style={{ maxHeight: 100 }}
-                value={messageText}
-                onChangeText={handleTyping}
-                onSubmitEditing={handleSend}
-                editable={!isSending}
-              />
+                <TextInput
+                  placeholder="Type a message"
+                  placeholderTextColor="#6B6B70"
+                  className="flex-1 text-foreground text-sm mb-2"
+                  multiline
+                  style={{ maxHeight: 100 }}
+                  value={messageText}
+                  onChangeText={handleTyping}
+                  onSubmitEditing={handleSend}
+                  editable={!isSending}
+                />
 
-              <Pressable
-                className="w-8 h-8 rounded-full items-center justify-center bg-primary"
-                onPress={handleSend}
-                disabled={!messageText.trim() || isSending}
-              >
-                {isSending ? (
-                  <ActivityIndicator size="small" color="#0D0D0F" />
-                ) : (
-                  <Ionicons name="send" size={18} color="#0D0D0F" />
-                )}
-              </Pressable>
+                <Pressable
+                  className="w-8 h-8 rounded-full items-center justify-center bg-primary"
+                  onPress={handleSend}
+                  disabled={!messageText.trim() || isSending}
+                >
+                  {isSending ? (
+                    <ActivityIndicator size="small" color="#0D0D0F" />
+                  ) : (
+                    <Ionicons name="send" size={18} color="#0D0D0F" />
+                  )}
+                </Pressable>
+              </View>
             </View>
-          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

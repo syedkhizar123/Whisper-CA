@@ -1,19 +1,23 @@
-import './App.css'
-import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react'
+import { Routes, Route, Navigate } from "react-router"
+import { Home } from "./pages/Home"
+import { Chat } from "./pages/Chat"
+import { useAuth } from "@clerk/react"
+import { PageLoader } from "./components/PageLoader"
 
 function App() {
+  const { isLoaded , isSignedIn} = useAuth()
+
+  if (!isLoaded) {
+    return <PageLoader />
+  }
+
   return (
     <>
-    <h1>Hello  , Welcome to Whisper</h1>
-      <header>
-        <Show when="signed-out">
-          <SignInButton mode='modal'/>
-          <SignUpButton mode='modal' />
-        </Show>
-        <Show when="signed-in">
-          <UserButton />
-        </Show>
-      </header>
+      <Routes>
+        <Route path="/" element={ !isSignedIn ? <Home /> : <Navigate to='/chat' />} />
+        {/* <Route path="/" element={<Home />} /> */}
+        <Route path='/chat' element={ isSignedIn ? <Chat /> : <Navigate to='/home' />} />
+      </Routes>
     </>
   )
 }

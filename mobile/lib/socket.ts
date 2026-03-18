@@ -43,13 +43,13 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
         socket.on("connect", () => {
             console.log("Socket Connected", { socketID: socket.id })
+            Sentry.logger.info("Socket connected", { socketId: socket.id });
             set({ isConnected: true })
         })
 
         socket.on("disconnect", () => {
-            console.log("Socket disconnected"
-                
-            )
+            console.log("Socket disconnected")
+            Sentry.logger.info("Socket disconnected", { socketId: socket.id });
             set({ isConnected: false })
         })
 
@@ -106,6 +106,8 @@ export const useSocketStore = create<SocketState>((set, get) => ({
                     }
                     return chat
                 })
+                    // Sort descending by lastMessageAt
+                    .sort((a, b) => (b.lastMessageAt?.localeCompare(a.lastMessageAt) || 0));
             })
 
             if (currentChatId !== msg.chat) {
