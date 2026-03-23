@@ -9,8 +9,6 @@ export const useChats = () => {
 
     return useQuery({
         queryKey: ["chats"],
-        enabled: isLoaded,
-        retry: 1,
         queryFn: async () => {
             try {
                 const token = await getToken()
@@ -18,10 +16,8 @@ export const useChats = () => {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "ngrok-skip-browser-warning": "true",
-                        "Accept": "application/json",
                     }
                 })
-                console.log(res.data)
                 return res.data
             } catch (error) {
                 console.log("Error Message :-", error.message)
@@ -43,7 +39,8 @@ export const useGetOrCreateChat = () => {
                 {},
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        Authorization: `Bearer ${token}`,
+                        "ngrok-skip-browser-warning": "true"
                     }
                 }
             )

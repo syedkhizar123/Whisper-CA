@@ -7,8 +7,14 @@ import { useChats, useGetOrCreateChat } from '../hooks/useChats'
 import { useMessages } from '../hooks/useMessages'
 import { SparklesIcon, MessageSquareIcon, PlusIcon } from "lucide-react";
 import { ChatListItem } from '../components/ChatListItem'
+import { ChatHeader } from '../components/ChatHeader'
+import { MessageBubble } from '../components/MesssageBubble'
+import { useCurrentUser } from '../hooks/useCurrentUser'
+import { ChatInput } from '../components/ChatInput'
+import { NewChatModal } from '../components/NewChatModal'
 
 export const Chat = () => {
+  const { data: currentUser } = useCurrentUser()
   const { signOut } = useAuth()
   const { user } = useUser()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -39,10 +45,10 @@ export const Chat = () => {
 
   const handleSend = (e) => {
     e.preventDefault()
-    if (!messageInput.trim() || !activeChatId || !socket || !user) return
+    if (!messageInput.trim() || !activeChatId || !socket || !currentUser) return
 
     const text = messageInput.trim()
-    sendMessage(activeChatId, text, user)
+    sendMessage(activeChatId, text, currentUser)
     setMessageInput("")
     setTyping(activeChatId, false)
   }
@@ -58,8 +64,6 @@ export const Chat = () => {
     }, 2000)
   }
 
-  // console.log("chats:", chats)
-  // console.log("type:", typeof chats)
   const activeChat = chats?.find((c) => c._id === activeChatId)
 
   return (
@@ -121,7 +125,70 @@ export const Chat = () => {
         </div>
 
       </div>
-    </div>
+
+      {/* Main Chat area */}
+      <div className='flex-1 flex flex-col '>
+
+        {activeChatId && activeChat ? (
+          <>
+            <ChatHeader participant={activeChat.participant} chatId={activeChatId} />
+
+            {/* messages */}
+            <div className='flex-1 overflow-y-auto p-6 space-y-4'>
+              {
+                messagesLoading && (
+                  <div className="flex items-center justify-center h-full">
+                    <span className="loading loading-spinner loading-md text-amber-400" />
+                  </div>
+                )
+              }
+
+              {(!messages || messages?.length === 0) && !messagesLoading && (
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-base-300/40 flex items-center justify-center mb-4">
+                    <MessageSquareIcon className="w-8 h-8 text-base-content/20" />
+                  </div>
+                  <p className="text-base-content/70">No messages yet</p>
+                  <p className="text-base-content/60 text-sm mt-1">Send a message to start the conversation</p>
+                </div>
+              )}
+
+              {messages?.length > 0 &&
+                messages.map((msg) => (
+                    <MessageBubble key={msg._id} message={msg} currentUser={currentUser} />
+                ))
+              }
+              <div ref={messagesEndRef} />
+            </div>
+
+            <ChatInput
+              value={messageInput}
+              onChange={handleTyping}
+              onSubmit={handleSend}
+              disabled={!messageInput.trim()}
+            />
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
+            <div className="w-20 h-20 rounded-3xl bg-linear-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center mb-6">
+              <MessageSquareIcon className="w-10 h-10 text-amber-400" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Welcome to Whisper</h2>
+            <p className="text-base-content/70 max-w-sm">
+              Select a conversation from the sidebar or start a new chat to begin messaging
+            </p>
+          </div>
+        )
+        }
+      </div >
+
+      <NewChatModal
+        onStartChat={handleStartChat}
+        isPending={startChatMutation.isPending}
+        isOpen={newChatModalOpen}
+        onClose={() => setNewChatModalOpen(false)}
+      />
+    </div >
   )
 }
 

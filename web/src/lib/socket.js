@@ -16,14 +16,14 @@ export const useSocketStore = create((set, get) => ({
 
         if (existingSocket) existingSocket.disconnect()
 
-        const socket = io(SOCKET_URL, { auth: { token } , transports: ["websocket"] })
+        const socket = io(SOCKET_URL, { auth: { token }, transports: ["websocket"] })
 
         socket.on("connect", () => {
             console.log("Socket Connected", { socketID: socket.id })
         })
 
         socket.on("connect_error", (error) => {
-            console.log("Socket connection error: " , error?.message)
+            console.log("Socket connection error: ", error?.message)
         })
 
         socket.on("socket-error", (error) => {
@@ -63,7 +63,7 @@ export const useSocketStore = create((set, get) => ({
             queryClient.setQueryData(["messages", message.chat], (old) => {
                 if (!old) return [message]
 
-                const filtered = old.filter((m) => !m._id.startsWith("-temp"))
+                const filtered = old.filter((m) => !m._id.startsWith("temp-"))
                 const exists = filtered.some((m) => m._id === message._id)
                 return exists ? filtered : [...filtered, message]
             })
@@ -121,10 +121,16 @@ export const useSocketStore = create((set, get) => ({
         const { socket, queryClient } = get()
         if (!socket?.connected || !queryClient) return
 
+        const tempId = `temp-${Date.now()}`;
         const optimisticMsg = {
             _id: tempId,
             chat: chatId,
-            sender: currentUser,
+            sender: {
+                _id : currentUser._id ,
+                name: currentUser.fullName || currentUser.firstName || "You",
+                email: currentUser.primaryEmailAddress?.emailAddress || "",
+                avatar: currentUser.imageUrl
+            },
             text,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
@@ -135,10 +141,10 @@ export const useSocketStore = create((set, get) => ({
             return [...old, optimisticMsg]
         })
 
-        socket.emit("send-message" , { chatId , text })
+        socket.emit("send-message", { chatId, text })
 
-        socket.once("socket-error" , () => {
-            queryClient.setQueryData([ "messages" , chatId] , (old) => {
+        socket.once("socket-error", () => {
+            queryClient.setQueryData(["messages", chatId], (old) => {
                 if (!old) return []
                 return old.filter((m) => m._id !== tempId)
             })

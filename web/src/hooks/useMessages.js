@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/react"
 import { useQuery } from "@tanstack/react-query"
-
+import api from "../lib/axios"
 
 
 export const useMessages = (chaId) => {
@@ -13,7 +13,8 @@ export const useMessages = (chaId) => {
             const token = await getToken()
             const res = await api.get(`/messages/chat/${chaId}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
+                    "ngrok-skip-browser-warning": "true",
                 }
             })
             return res.data
