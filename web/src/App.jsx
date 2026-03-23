@@ -3,7 +3,7 @@ import { Home } from "./pages/Home"
 import { Chat } from "./pages/Chat"
 import { useAuth } from "@clerk/react"
 import { PageLoader } from "./components/PageLoader"
-import { useUserSync } from "./hooks/useUserSync.js"
+import { useUserSync } from "./hooks/useUserSync"
 
 function App() {
   const { isLoaded , isSignedIn} = useAuth()

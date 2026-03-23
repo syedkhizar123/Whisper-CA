@@ -16,14 +16,14 @@ export const useSocketStore = create((set, get) => ({
 
         if (existingSocket) existingSocket.disconnect()
 
-        const socket = io(SOCKET_URL, { auth: { token } })
+        const socket = io(SOCKET_URL, { auth: { token } , transports: ["websocket"] })
 
         socket.on("connect", () => {
             console.log("Socket Connected", { socketID: socket.id })
         })
 
         socket.on("connect_error", (error) => {
-            console.log("Socket connection error: ".error.message)
+            console.log("Socket connection error: " , error?.message)
         })
 
         socket.on("socket-error", (error) => {

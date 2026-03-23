@@ -11,32 +11,36 @@ import cors from "cors"
 const app = express()
 app.use(express.json())
 
+
 const allowedOrigins = [
     "http://localhost:8081",
     "http://localhost:5173",
-    process.env.FRONTEND_URL,
+    process.env.FRONTEND_URL!,
 ].filter(Boolean)
 
 // Middleware that integrates clerk authentication into express application
-app.use(clerkMiddleware())
 app.use(cors({
     origin: allowedOrigins as any,
-    credentials: true
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization" , "ngrok-skip-browser-warning"]
 }))
+app.use(clerkMiddleware())
+
 
 app.use((req, res, next) => {
     console.log(`📨 ${req.method} ${req.url}`)
     next()
 })
 
-app.get("/health" , (req , res) => {
-    res.json({ status: "ok" , message: "Server is running"})
+app.get("/health", (req, res) => {
+    res.json({ status: "ok", message: "Server is running" })
 })
 
-app.use("/api/auth" , authRoutes)
-app.use("/api/chats" , chatRoutes)
-app.use("/api/messages" , messageRoutes)
-app.use("/api/users" , userRoutes)
+app.use("/api/auth", authRoutes)
+app.use("/api/chats", chatRoutes)
+app.use("/api/messages", messageRoutes)
+app.use("/api/users", userRoutes)
 
 // error handlers must come after all the routes and other middlewares so they can catch errors passed with next(err) or thrown inside async handlers.
 app.use(errorHandler)

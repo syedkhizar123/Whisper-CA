@@ -23,7 +23,7 @@ export const useUserSync = () => {
             console.log("User synced with backend")
         },
         onError: () => {
-            console.log("FAiled to sync user with backend")
+            console.log("Failed to sync user with backend")
         }
     })
 
